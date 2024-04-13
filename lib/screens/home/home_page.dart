@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:heldis/constants/constants.dart';
+import 'package:heldis/screens/home/components/bat_utills.dart';
 
 class HomePage extends StatefulWidget{
   const HomePage({super.key});
-
+  
   @override
   State<HomePage> createState() => _HomePageState();
   
@@ -57,6 +58,12 @@ class _HomePageState extends State<HomePage> {
                 ),
               },
             ),
+          /* Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: buildTopBar()
+          ), */
           Positioned(
             bottom: 0,
             left: 0,
@@ -150,26 +157,57 @@ class _HomePageState extends State<HomePage> {
             );
           },
         ),
+        actions: [
+          Container(
+            height: kDefaultPadding,
+            margin: EdgeInsets.all(kDefaultPadding / 2),
+            decoration: BoxDecoration(
+              color: kPrimaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(kDefaultPadding,),
+              image: const DecorationImage(
+                image: AssetImage("assets/images/gps.png"),
+              )
+            ),
+          ),
+          const Text("Connecte")
+        ],
       );
       
   }
 
-  Container buildBottomNavigationBar (){
+   Container buildTopBar (){
     return Container(
-     // padding: EdgeInsets.all(20),
-      margin: EdgeInsets.all(20),
-      height: 100,
-      width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30)
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("data"),
-          Text("data")
-        ],
-      ),
-    );
-  }
+            padding: EdgeInsets.all(20),
+              width: MediaQuery.of(context).size.width,
+              decoration:const  BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                   topRight: Radius.circular(30)
+                )
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  IconButton(
+                    onPressed: (){},
+                    icon: Icon(Icons.menu),
+                  ),
+                  const SizedBox(width: 5,),
+                  Text("Tizi Demo"),
+                  Spacer(),
+                  Row(
+                    children: [
+                      Column(
+                        children: [
+                          //BatUtils.getBatIcon(BatState.Full),
+                        ],
+                      )
+                    ],
+                  )
+                ],
+              ),
+            );
+          }
+
 }
