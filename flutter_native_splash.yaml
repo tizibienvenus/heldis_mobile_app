@@ -1,0 +1,17 @@
+# flutter_native_splash-development.yaml
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: assets/heldis.png
+  #branding: assets/logo_white.png
+  image_dark: assets/heldis.png
+  android: true
+  ios: true
+  web: false
+
+
+  android_12:
+    image: assets/heldis.png
+    icon_background_color: "#FFFFFF"
+    #branding: assets/logo_white.png
+    #image_dark: assets/logo2.png
+    icon_background_color_dark: "#FFFFFF"
