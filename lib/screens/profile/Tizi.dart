@@ -1,9 +1,7 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heldis/constants/constants.dart';
 import 'package:heldis/screens/profile/components/premium_card.dart';
-
 
 class ProfileScreen extends StatefulWidget {
   ProfileScreen({super.key});
@@ -18,8 +16,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     "Summary",
     "About Us",
     "Help Center",
-    "Seetings",
-
+    "Settings",
   ];
 
   List<IconData> listIcons = [
@@ -41,7 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   ];
 
   @override
-   Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFF6F6F6),
       appBar: buildAppBar(context),
@@ -54,73 +51,82 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Text(
                 "Premium",
                 style: Theme.of(context).textTheme.titleSmall!.copyWith(),
-            ),
-            const SizedBox(height: kDefaultPadding / 2,),
-            const PremiumCard(),
-            const SizedBox(height: kDefaultPadding,),
-            Container(
-              padding: EdgeInsets.all(kDefaultPadding),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(kDefaultPadding / 3),
               ),
-              child: Column(children:  List.generate(
-                listIcons.length, 
-              (index) => ListTile(
-                    leading: Icon(
-                      listIcons[index],
-                      size: 20,
-                     // color: kPrimaryColor,
+              const SizedBox(
+                height: kDefaultPadding / 2,
+              ),
+              const PremiumCard(),
+              const SizedBox(
+                height: kDefaultPadding,
+              ),
+              Container(
+                padding: EdgeInsets.all(kDefaultPadding),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(kDefaultPadding / 3),
+                ),
+                child: Column(
+                  children: List.generate(
+                    listIcons.length,
+                    (index) => ListTile(
+                      leading: Icon(
+                        listIcons[index],
+                        size: 20,
+                        // color: kPrimaryColor,
+                      ),
+                      title: Text(
+                        listInfo[index],
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                      onTap: () {
+                        // Action à exécuter lorsqu'un ListTile est cliqué
+                        print('Tapped on ${listInfo[index]}');
+                      },
                     ),
-                    title: Text(
-                      listInfo[index],
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
-                    onTap: () {
-                      // Action à exécuter lorsqu'un ListTile est cliqué
-                      print('Tapped on ${listInfo[index]}');
-                    },
                   ),
+                ),
               ),
-            ),
-          ),
-            const SizedBox(height: kDefaultPadding,),
-            Text(
+              const SizedBox(
+                height: kDefaultPadding,
+              ),
+              Text(
                 "Other Service",
                 style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                  fontFamily: "Montserrat",
+                      fontFamily: "Montserrat",
+                    ),
+              ),
+              const SizedBox(
+                height: kDefaultPadding / 2,
+              ),
+              Container(
+                padding: EdgeInsets.all(kDefaultPadding),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(kDefaultPadding / 3),
                 ),
-            ),
-            const SizedBox(height: kDefaultPadding / 2,),
-            Container(
-              padding: EdgeInsets.all(kDefaultPadding),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(kDefaultPadding / 3),
-              ),
-              child: Column(children:  List.generate(
-                AIlistIcons.length, 
-              (index) => ListTile(
-                    leading: Icon(
-                      AIlistIcons[index],
-                      size: 20,
-                     // color: kPrimaryColor,
+                child: Column(
+                  children: List.generate(
+                    AIlistIcons.length,
+                    (index) => ListTile(
+                      leading: Icon(
+                        AIlistIcons[index],
+                        size: 20,
+                        // color: kPrimaryColor,
+                      ),
+                      title: Text(
+                        AIlistInfo[index],
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                      onTap: () {
+                        // Action à exécuter lorsqu'un ListTile est cliqué
+                        print('Tapped on ${listInfo[index]}');
+                      },
                     ),
-                    title: Text(
-                      AIlistInfo[index],
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
-                    onTap: () {
-                      // Action à exécuter lorsqu'un ListTile est cliqué
-                      print('Tapped on ${listInfo[index]}');
-                    },
                   ),
+                ),
               ),
-            ),
+            ],
           ),
-        
-        ],
-            ),
         ),
       ),
     );
@@ -132,7 +138,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       surfaceTintColor: Colors.white,
       automaticallyImplyLeading: false,
       title: Text(
-        "Profiel",
+        "Profile",
       ),
     );
   }
