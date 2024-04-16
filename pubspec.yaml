@@ -1,15 +1,14 @@
 name: heldis
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.3.2 <4.0.0'
+  sdk: ">=3.3.2 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-
 
   cupertino_icons: ^1.0.6
   google_fonts: ^6.2.1
@@ -18,6 +17,7 @@ dependencies:
   url_launcher: ^6.2.5
   open_whatsapp: ^0.0.1
   google_maps_flutter: ^2.6.0
+  geolocator: ^11.0.0
   equatable: ^2.0.5
   flutter_native_splash: ^2.4.0
 
@@ -28,9 +28,7 @@ dev_dependencies:
   flutter_lints: ^3.0.0
 
 flutter:
-
   uses-material-design: true
-
 
   assets:
     - assets/

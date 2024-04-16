@@ -5,9 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:heldis/common/FieldInput.dart';
-import 'package:heldis/constants/constants.dart';
-import 'package:heldis/screens/home/components/bat_utills.dart';
 
 class HistoryView extends StatefulWidget {
   const HistoryView({super.key});
@@ -130,52 +127,20 @@ class _HistoryViewState extends State<HistoryView> {
                                 initialDate: DateTime.now(),
                                 firstDate: DateTime(2015, 8),
                                 lastDate: DateTime(2101));
-                            if (picked != null) {
-                              dateStart.text = picked.year.toString() +
-                                  "-" +
-                                  picked.month.toString() +
-                                  "-" +
-                                  picked.day.toString();
+                            if (picked == null) {
+                              return;
                             }
+                            final TimeOfDay? pickedTime = await showTimePicker(
+                                context: context, initialTime: TimeOfDay.now());
+
+                            if (pickedTime == null) {
+                              return;
+                            }
+                            dateStart.text =
+                                "${picked.year}/${picked.month}/${picked.day} - ${pickedTime.hour}:${pickedTime.minute}";
                           },
                           decoration: InputDecoration(
                             hintText: "Start Date",
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 9.0, horizontal: 10.0),
-                            labelStyle: const TextStyle(color: Colors.grey),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            border: const OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10.0)),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      Expanded(
-                        child: TextFormField(
-                          controller: dateEnd,
-                          readOnly: true,
-                          onTap: () async {
-                            final DateTime? picked = await showDatePicker(
-                                context: context,
-                                initialDate: DateTime.now(),
-                                firstDate: DateTime(2015, 8),
-                                lastDate: DateTime(2101));
-                            if (picked != null) {
-                              dateEnd.text = picked.year.toString() +
-                                  "-" +
-                                  picked.month.toString() +
-                                  "-" +
-                                  picked.day.toString();
-                            }
-                          },
-                          decoration: InputDecoration(
-                            hintText: "End Date",
                             contentPadding: const EdgeInsets.symmetric(
                                 vertical: 9.0, horizontal: 10.0),
                             labelStyle: const TextStyle(color: Colors.grey),
@@ -197,19 +162,46 @@ class _HistoryViewState extends State<HistoryView> {
                   Row(
                     children: [
                       Expanded(
-                        child: FilledButton(
-                          onPressed: () {},
-                          child: const Text("Validate"),
-                          style: ButtonStyle(
-                            shape: MaterialStatePropertyAll(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
+                        child: TextFormField(
+                          controller: dateEnd,
+                          readOnly: true,
+                          onTap: () async {
+                            final DateTime? picked = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(2015, 8),
+                                lastDate: DateTime(2101));
+                            if (picked == null) {
+                              return;
+                            }
+                            final TimeOfDay? pickedTime = await showTimePicker(
+                                context: context, initialTime: TimeOfDay.now());
+
+                            if (pickedTime == null) {
+                              return;
+                            }
+                            dateEnd.text =
+                                "${picked.year}/${picked.month}/${picked.day} - ${pickedTime.hour}:${pickedTime.minute}";
+                          },
+                          decoration: InputDecoration(
+                            hintText: "End Date",
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 9.0, horizontal: 10.0),
+                            labelStyle: const TextStyle(color: Colors.grey),
+                            filled: true,
+                            fillColor: Colors.grey[200],
+                            border: const OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10.0)),
                             ),
                           ),
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(
+                    height: 20,
                   ),
                 ],
               ),

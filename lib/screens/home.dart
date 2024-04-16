@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:heldis/screens/history/history.dart';
 import 'package:heldis/screens/home/home_page.dart';
+import 'package:heldis/screens/kit/gps_kit_screen.dart';
 import 'package:heldis/screens/profile/Tizi.dart';
 import 'package:heldis/screens/profile/profile_screen.dart';
 
@@ -16,8 +18,9 @@ class _ChatsScreenState extends State<HomeScreen> {
   int currentIndex = 0;
 
   List pages = [
-    HomePage(),
-    HistoryView(),
+    const HomePage(),
+    const HistoryView(),
+    const GPSKitScreen(),
     ProfileScreen(),
   ];
 
@@ -35,9 +38,18 @@ class _ChatsScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: buildBottomNavigationBar(),
-      body: pages[currentIndex],
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.white,
+        statusBarIconBrightness: Brightness.dark,
+      ),
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          bottomNavigationBar: buildBottomNavigationBar(),
+          body: pages[currentIndex],
+        ),
+      ),
     );
   }
 
@@ -57,9 +69,11 @@ class _ChatsScreenState extends State<HomeScreen> {
       },
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.map), label: "Home"),
-        BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: "People"),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: "Forum"),
-        
+        BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month), label: "History"),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.person_sharp), label: "Person"),
+        BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Setting"),
       ],
     );
   }

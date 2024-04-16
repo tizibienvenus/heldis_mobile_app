@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:heldis/common/FieldInput.dart';
+import 'package:heldis/common/tools.dart';
 import 'package:heldis/constants/constants.dart';
+import 'package:heldis/screens/authentification/kit_screen.dart';
 import 'package:heldis/screens/authentification/otp_verification.dart';
 
 class OmboardView extends StatelessWidget {
@@ -14,111 +17,188 @@ class OmboardView extends StatelessWidget {
   Widget build(BuildContext context) {
     //final state = context.watch<AuthenticationState>();
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(
-            horizontal: kDefaultPadding, vertical: kDefaultPadding * 5),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            //mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Spacer(
-                flex: 1,
-              ),
-              Text(
-                "Welcome",
-                style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                      color: kTextColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              const SizedBox(
-                height: kDefaultPadding,
-              ),
-              Text(
-                "Log In",
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      color: kTextColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              const Spacer(
-                flex: 1,
-              ), // Espacement entre les champs
-              FieldInput(
-                title: "Numero de Téléphone",
-                controller: phoneNumberController,
-                inputType: TextInputType.text,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your phone number';
-                  }
-                  return null;
-                },
-              ),
-              const Spacer(
-                flex: 3,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: FilledButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => OTPVerificationView(),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: kDefaultPadding,
+          ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              //mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(
+                  height: 75,
+                ),
+                Text(
+                  "Login",
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        color: kTextColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(
+                  height: 40,
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Row(children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                showWarningSnackBar(
+                                    context: context,
+                                    message: "Feature coming soon");
+                              },
+                              style: ButtonStyle(
+                                padding: const MaterialStatePropertyAll(
+                                    EdgeInsets.all(13)),
+                                elevation: const MaterialStatePropertyAll(0),
+                                backgroundColor:
+                                    MaterialStatePropertyAll(Colors.blue[50]),
+                                shape: const MaterialStatePropertyAll(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.horizontal(
+                                        left: Radius.circular(10)),
+                                  ),
+                                ),
+                              ),
+                              child: const Text(
+                                "Phone",
+                                style: TextStyle(
+                                  color: kTextColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
                           ),
-                        );
-                      },
-                      child: Text("Continue"),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              style: const ButtonStyle(
+                                padding: const MaterialStatePropertyAll(
+                                    EdgeInsets.all(13)),
+                                elevation: MaterialStatePropertyAll(0),
+                                backgroundColor:
+                                    MaterialStatePropertyAll(kPrimaryColor),
+                                shape: MaterialStatePropertyAll(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.horizontal(
+                                        right: Radius.circular(10)),
+                                  ),
+                                ),
+                              ),
+                              child: const Text("Email",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+                        ]), // Espacement entre les champs
+                        const SizedBox(
+                          height: 75,
+                        ),
+                        FieldInput(
+                          title: "Email",
+                          controller: phoneNumberController,
+                          inputType: TextInputType.text,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your phone number';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(
+                          height: kDefaultPadding,
+                        ),
+                        FieldInput(
+                          title: "Password",
+                          controller: phoneNumberController,
+                          inputType: TextInputType.text,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your phone number';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(
-                height: kDefaultPadding,
-              ),
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text.rich(
-                    TextSpan(
-                      text: "Continuer avec ",
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: kDefaultPadding,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  CircleAvatar(
-                    backgroundColor: kContentColorDarkTheme,
-                    child: IconButton(
+                ),
+                const SizedBox(
+                  height: kDefaultPadding,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: FilledButton(
+                        style: ButtonStyle(
+                            padding: const MaterialStatePropertyAll(
+                                EdgeInsets.all(13)),
+                            shape:
+                                MaterialStatePropertyAll(RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ))),
                         onPressed: () {
-                          //final state = context.read<AuthenticationState>();
-                          //state.googleSingin();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const KitScreen(),
+                            ),
+                          );
                         },
-                        icon: SvgPicture.asset("assets/icons/google.svg")),
-                  ),
-                  CircleAvatar(
-                    backgroundColor: kContentColorDarkTheme,
-                    child: IconButton(
-                        onPressed: () {},
-                        icon: SvgPicture.asset(
-                          "assets/icons/envelope.svg",
-                        )),
-                  )
-                ],
-              ),
-              const Spacer(
-                flex: 2,
-              ),
-            ],
+                        child: const Text("CONTINUE"),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: kDefaultPadding,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: FilledButton(
+                        style: ButtonStyle(
+                            backgroundColor:
+                                const MaterialStatePropertyAll(Colors.black12),
+                            padding: const MaterialStatePropertyAll(
+                                EdgeInsets.all(13)),
+                            shape:
+                                MaterialStatePropertyAll(RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ))),
+                        onPressed: () {
+                          showWarningSnackBar(
+                              context: context, message: "Feature coming soon");
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset("assets/icons/google.svg"),
+                            const SizedBox(
+                              width: kDefaultPadding,
+                            ),
+                            const Text(
+                              "Connect with Google",
+                              style: TextStyle(color: Colors.black54),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: kDefaultPadding,
+                ),
+              ],
+            ),
           ),
         ),
       ),
