@@ -44,7 +44,7 @@ class BatUtils {
     if (img.isNotEmpty) {
       widget = SvgPicture.asset(
         'assets/bat/$img',
-        width: 40.0,
+        height: 15.0,
       );
     } else {
       widget = icon;

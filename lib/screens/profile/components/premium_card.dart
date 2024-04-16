@@ -10,12 +10,13 @@ class PremiumCard extends StatelessWidget{
       padding: EdgeInsets.all(kDefaultPadding),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(kDefaultPadding / 3),
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
                 begin: Alignment(0, -3),
                 end: Alignment(1, 3),
                 colors: [
+                  kPrimaryColor,
+                  kPrimaryColor.withOpacity(0.5),
                   kEmailPrimaryColor, 
-                  kPrimaryColor
                 ],
               ),
       ),

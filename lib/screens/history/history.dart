@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:heldis/screens/history/components/history_card.dart';
 
 class HistoryView extends StatelessWidget{
 
@@ -6,10 +7,13 @@ class HistoryView extends StatelessWidget{
   Widget build(BuildContext context){
     return Scaffold(
       appBar: builAppBar(),
-      body: Container(
-        color: Color(0xFFF8F8F8),
-        child: Center(child: Text("Child's History")),
-      ),
+      body: ListView.builder(
+        itemCount: 15, 
+        itemBuilder: (BuildContext context, int index) {
+        return HistoryCard();
+  },
+)
+
     );
   }
 

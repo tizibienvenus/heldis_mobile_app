@@ -6,7 +6,7 @@ const kPrimaryColor = Color(0xFF1977F2);
 ///(0xFFFF6EAB);
 
 // 122D7B, FF6EAB DB00FF
-const kEmailPrimaryColor = Color(0xFF0285FD);
+const kEmailPrimaryColor = Color.fromARGB(255, 253, 207, 2);
 const kSecondaryColor = Color(0xFF122D7B);
 const kContentColorLightTheme = Color(0xFF1D1D35);
 const kContentColorDarkTheme = Color(0xFFF5FCF9);
@@ -28,10 +28,7 @@ const kBackgoundColor = Color(0xFF091C40);
 const kSecondaryCallingColor = Color(0xFF06060);
 const kRedColor = Color(0xFFFF1E46);
 
-/// API Key
-const String google_api_key = "AIzaSyComSRpYE55lHPBvRwdctmLUSaxD7zX6GY";
-//const String google_api_key = "AIzaSyBA_N4obTKm34xlQiOnb7tF14aE8ABcufU";
-//const String google_api_key = "AIzaSyCbIWmCy0PNQI7TD4xxOBq15S8aMNi0ry4";
+
 const String message =
     "Les femmes africaines ont toujours joué un rôle important dans la société, mais elles sont encore sous-représentées dans les postes de leadership. Ce séminaire explorera la place de la femme africaine dans le leadership, les défis auxquels elle est confrontée et les moyens de promouvoir son autonomisation. Le séminaire comprendra des présentations de spécialistes du leadership, des tables rondes avec des femmes leaders africaines et des ateliers pratiques. Les participants auront l'occasion d'apprendre sur les compétences de leadership, de développer leur réseau et de s'inspirer des histoires de réussite de femmes leaders africaines.  Les femmes africaines ont toujours joué un rôle important dans la société, mais elles sont encore sous-représentées dans les postes de leadership. Ce séminaire explorera la place de la femme africaine dans le leadership, les défis auxquels elle est confrontée et les moyens de promouvoir son autonomisation. Le séminaire comprendra des présentations de spécialistes du leadership, des tables rondes avec des femmes leaders africaines et des ateliers pratiques. Les participants auront l'occasion d'apprendre sur les compétences de leadership, de développer leur réseau et de s'inspirer des histoires de réussite de femmes leaders africaines. Les femmes africaines ont toujours joué un rôle important dans la société, mais elles sont encore sous-représentées dans les postes de leadership. Ce séminaire explorera la place de la femme africaine dans le leadership, les défis auxquels elle est confrontée et les moyens de promouvoir son autonomisation. Le séminaire comprendra des présentations de spécialistes du leadership, des tables rondes avec des femmes leaders africaines et des ateliers pratiques. Les participants auront l'occasion d'apprendre sur les compétences de leadership, de développer leur réseau et de s'inspirer des histoires de réussite de femmes leaders africaines.";
 
