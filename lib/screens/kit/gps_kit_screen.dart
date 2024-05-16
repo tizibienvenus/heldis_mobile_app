@@ -1,13 +1,17 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:heldis/common/tools.dart';
 import 'package:heldis/constants/constants.dart';
-import 'package:heldis/screens/authentification/kit_screen.dart';
+import 'package:heldis/screens/authentification/presentation/kit_screen.dart';
+import 'package:heldis/screens/kit/blocs/get_children/get_children_bloc.dart';
 import 'package:heldis/screens/kit/gps_kit_details_screen.dart';
+import 'package:heldis/screens/kit/model/get_all_child_response_model.dart';
+import 'package:heldis/services/session/selected_kit/selected_kit_bloc.dart';
 
 class GPSKitScreen extends StatefulWidget {
   const GPSKitScreen({super.key});
@@ -17,10 +21,6 @@ class GPSKitScreen extends StatefulWidget {
 }
 
 class _GPSKitScreenState extends State<GPSKitScreen> {
-  final Completer<GoogleMapController> _controller = Completer();
-  List<LatLng> generatedPoints = [];
-  TextEditingController dateEnd = TextEditingController();
-  TextEditingController dateStart = TextEditingController();
   /* @override
   void dispose() {
     _swiperController.dispose();
@@ -29,8 +29,8 @@ class _GPSKitScreenState extends State<GPSKitScreen> {
  */
   @override
   void initState() {
-    setState(() {});
     super.initState();
+    initChildren();
   }
 
   @override
@@ -41,50 +41,42 @@ class _GPSKitScreenState extends State<GPSKitScreen> {
       //bottomNavigationBar: buildBottomNavigationBar(),
       body: Padding(
         padding: const EdgeInsets.all(kDefaultPadding),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const GPSKitDetailsScreen()),
-                  );
-                },
-                child: const SelectedGPSKitItem(),
-              ),
-              const SizedBox(
-                height: kDefaultPadding,
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const GPSKitDetailsScreen()),
-                  );
-                },
-                child: const GPSKitItem(),
-              ),
-              const SizedBox(
-                height: kDefaultPadding,
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const GPSKitDetailsScreen()),
-                  );
-                },
-                child: const GPSKitItem(),
-              ),
-              const SizedBox(
-                height: 60,
-              )
-            ],
-          ),
+        child: BlocListener<GetChildrenBloc, GetChildrenState>(
+          listener: (context, state) {
+            if (state is GetChildrenError) {
+              showErrorSnackBar(context: context, message: state.message);
+            }
+          },
+          child: context.watch<GetChildrenBloc>().state is GetChildrenLoading
+              ? const Center(child: CircularProgressIndicator())
+              : RefreshIndicator(
+                  onRefresh: () async {
+                    context.read<GetChildrenBloc>().add(const GetChildren());
+                  },
+                  child: ListView.builder(
+                    itemCount: (context.watch<GetChildrenBloc>().state
+                            is GetChildrenSuccess)
+                        ? (context.watch<GetChildrenBloc>().state
+                                as GetChildrenSuccess)
+                            .children
+                            .length
+                        : 0,
+                    itemBuilder: (context, index) {
+                      ChildModel child = (context.watch<GetChildrenBloc>().state
+                              as GetChildrenSuccess)
+                          .children[index];
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: SelectedGPSKitItem(
+                          child: child,
+                          isSelected:
+                              context.watch<SelectedKitBloc>().state.kitId ==
+                                  child.id,
+                        ),
+                      );
+                    },
+                  ),
+                ),
         ),
       ),
       floatingActionButton: Padding(
@@ -103,7 +95,9 @@ class _GPSKitScreenState extends State<GPSKitScreen> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const KitScreen(),
+                        builder: (context) => const KitScreen(
+                          canPop: true,
+                        ),
                       ));
                 },
                 child: const Text("Add GPS Kit"),
@@ -114,6 +108,17 @@ class _GPSKitScreenState extends State<GPSKitScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
+  }
+
+  initChildren() {
+    if (context.read<GetChildrenBloc>().state is GetChildrenSuccess) {
+      if ((context.read<GetChildrenBloc>().state as GetChildrenSuccess)
+          .children
+          .isNotEmpty) {
+        return;
+      }
+    }
+    context.read<GetChildrenBloc>().add(const GetChildren());
   }
 
   AppBar buildAppBar() {
@@ -131,127 +136,83 @@ class _GPSKitScreenState extends State<GPSKitScreen> {
 class SelectedGPSKitItem extends StatelessWidget {
   const SelectedGPSKitItem({
     super.key,
+    this.isSelected = false,
+    required this.child,
   });
+
+  final bool isSelected;
+  final ChildModel child;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.all(Radius.circular(15)),
-          ),
-          child: Row(children: [
-            Image.asset(
-              "assets/heldis.png",
-              width: 100,
-              height: 100,
-              fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return GPSKitDetailsScreen(child: child);
+        }));
+      },
+      child: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(15)),
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Text(
-                        "01202165106265165010651506032006",
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+            child: Row(children: [
+              Image.asset(
+                "assets/heldis.png",
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          child.gps?.simNumber ?? "",
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const Text(
-                      "John Doe",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    )
-                  ],
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        child.name ?? "",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                ),
+              )
+            ]),
+          ),
+          if (isSelected)
+            const Positioned(
+              child: Padding(
+                padding: EdgeInsets.all(2),
+                child: Icon(
+                  Icons.check_circle_rounded,
+                  size: 25,
+                  color: Colors.green,
                 ),
               ),
-            )
-          ]),
-        ),
-        const Positioned(
-          child: Padding(
-            padding: EdgeInsets.all(2),
-            child: Icon(
-              Icons.check_circle_rounded,
-              size: 25,
-              color: Colors.green,
             ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class GPSKitItem extends StatelessWidget {
-  const GPSKitItem({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(15)),
+        ],
       ),
-      child: Row(children: [
-        Image.asset(
-          "assets/heldis.png",
-          width: 100,
-          height: 100,
-          fit: BoxFit.cover,
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Text(
-                    "01202165106265165010651506032006",
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                const Text(
-                  "John Doe",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                )
-              ],
-            ),
-          ),
-        )
-      ]),
     );
   }
 }

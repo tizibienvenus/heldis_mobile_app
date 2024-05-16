@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:heldis/screens/history/history.dart';
 import 'package:heldis/screens/home/home_page.dart';
 import 'package:heldis/screens/kit/gps_kit_screen.dart';
-import 'package:heldis/screens/profile/Tizi.dart';
 import 'package:heldis/screens/profile/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {

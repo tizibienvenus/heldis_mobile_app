@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:heldis/constants/constants.dart';
-import 'package:heldis/screens/authentification/connect_gps.dart';
+import 'package:heldis/screens/authentification/presentation/connect_gps.dart';
 import 'package:pinput/pinput.dart';
 
 

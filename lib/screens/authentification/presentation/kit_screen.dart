@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:heldis/constants/constants.dart';
-import 'package:heldis/screens/authentification/connect_gps.dart';
+import 'package:heldis/screens/authentification/presentation/connect_gps.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class KitScreen extends StatefulWidget {
-  const KitScreen({super.key});
-
+  const KitScreen({super.key, this.canPop = false});
+  final bool canPop;
   @override
   State<KitScreen> createState() => _KitScreenState();
 }
@@ -20,6 +20,7 @@ class _KitScreenState extends State<KitScreen> {
   Widget build(BuildContext context) {
     //final state = context.watch<AuthenticationState>();
     return Scaffold(
+      appBar: widget.canPop ? AppBar() : null,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -45,11 +46,21 @@ class _KitScreenState extends State<KitScreen> {
                               borderRadius: BorderRadius.circular(10),
                             ))),
                         onPressed: () {
-                          Navigator.push(
+                          if (widget.canPop) {
+                            Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => GPSConnectView(),
-                              ));
+                              ),
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => GPSConnectView(),
+                              ),
+                            );
+                          }
                         },
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,

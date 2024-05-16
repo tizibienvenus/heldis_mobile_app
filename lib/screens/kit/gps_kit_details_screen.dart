@@ -4,22 +4,25 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:heldis/common/tools.dart';
 import 'package:heldis/constants/constants.dart';
+import 'package:heldis/screens/kit/model/get_all_child_response_model.dart';
 import 'package:heldis/screens/kit/zones_screen.dart';
+import 'package:heldis/services/session/selected_kit/selected_kit_bloc.dart';
 
 class GPSKitDetailsScreen extends StatefulWidget {
-  const GPSKitDetailsScreen({super.key});
-
+  const GPSKitDetailsScreen({
+    super.key,
+    required this.child,
+  });
+  final ChildModel child;
   @override
   State<GPSKitDetailsScreen> createState() => _GPSKitDetailsScreenState();
 }
 
 class _GPSKitDetailsScreenState extends State<GPSKitDetailsScreen> {
-  List<LatLng> generatedPoints = [];
-  TextEditingController dateEnd = TextEditingController();
-  TextEditingController dateStart = TextEditingController();
   /* @override
   void dispose() {
     _swiperController.dispose();
@@ -62,9 +65,9 @@ class _GPSKitDetailsScreenState extends State<GPSKitDetailsScreen> {
                     color: Colors.blue,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Text(
-                    "01202165106265165010651506032006",
-                    style: TextStyle(
+                  child: Text(
+                    widget.child.gps?.simNumber ?? "",
+                    style: const TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -74,9 +77,9 @@ class _GPSKitDetailsScreenState extends State<GPSKitDetailsScreen> {
                 const SizedBox(
                   height: kDefaultPadding,
                 ),
-                const Text(
-                  "John Doe",
-                  style: TextStyle(
+                Text(
+                  widget.child.name ?? "",
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -92,10 +95,10 @@ class _GPSKitDetailsScreenState extends State<GPSKitDetailsScreen> {
                 const SizedBox(
                   height: 10,
                 ),
-                const Text(
-                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempor metus, consectetur adipiscing elit. Sed tempor metus, adipiscing elit. Sed tempor metus, adipiscing elit. Sed tempor metus. ",
+                Text(
+                  widget.child.description ?? "None",
                   textAlign: TextAlign.justify,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 13,
                   ),
                 ),
@@ -115,8 +118,20 @@ class _GPSKitDetailsScreenState extends State<GPSKitDetailsScreen> {
                             ),
                           ),
                         ),
-                        onPressed: null,
-                        child: const Text("Use This GPS Kit",
+                        onPressed:
+                            context.watch<SelectedKitBloc>().state.kitId ==
+                                    widget.child.id
+                                ? null
+                                : () {
+                                    context.read<SelectedKitBloc>().add(
+                                        ChangeSelectedKitEvent(
+                                            kit: widget.child.id ?? 0));
+                                  },
+                        child: Text(
+                            context.watch<SelectedKitBloc>().state.kitId ==
+                                    widget.child.id
+                                ? "You Use This GPS Kit"
+                                : "Use This GPS Kit",
                             style: TextStyle(fontWeight: FontWeight.bold)),
                       ),
                     ),
@@ -140,7 +155,9 @@ class _GPSKitDetailsScreenState extends State<GPSKitDetailsScreen> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const ZoneScreen()));
+                                  builder: (context) => ZoneScreen(
+                                        childId: widget.child.id ?? 0,
+                                      )));
                         },
                         child: const Text("Safe Zones",
                             style: TextStyle(fontWeight: FontWeight.bold)),

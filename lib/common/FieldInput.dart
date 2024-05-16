@@ -12,7 +12,9 @@ class FieldInput extends StatelessWidget {
     this.minLines,
     this.formatter,
     this.onChanged,
+    this.onTap,
     this.readOnly = false,
+    this.obscureText = false,
   }) : super(key: key);
 
   final String title;
@@ -23,7 +25,9 @@ class FieldInput extends StatelessWidget {
   final int? minLines;
   final List<TextInputFormatter>? formatter;
   final void Function(String)? onChanged;
+  final void Function()? onTap;
   final bool readOnly;
+  final bool obscureText;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +37,8 @@ class FieldInput extends StatelessWidget {
       minLines: minLines,
       maxLines: maxLines,
       inputFormatters: formatter,
+      obscureText: obscureText,
+      onTap: onTap,
       onChanged: onChanged,
       readOnly: readOnly,
       autovalidateMode: AutovalidateMode.onUserInteraction,

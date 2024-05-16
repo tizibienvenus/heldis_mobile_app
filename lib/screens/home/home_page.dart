@@ -3,9 +3,15 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:heldis/common/widgets/payment_view.dart';
 import 'package:heldis/constants/constants.dart';
-import 'package:heldis/screens/home/components/bat_utills.dart';
+import 'package:heldis/constants/general.dart';
+import 'package:heldis/screens/authentification/domain/entities/user_entity.dart';
+import 'package:heldis/screens/authentification/presentation/blocs/auth/auth_bloc.dart';
+import 'package:heldis/screens/authentification/presentation/blocs/get_user/get_user_bloc.dart';
+import 'package:heldis/services/session/connexion/connexion_bloc.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -51,125 +57,141 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: buildAppBar(),
-      //bottomNavigationBar: buildBottomNavigationBar(),
-      body: Stack(
-        children: [
-          GoogleMap(
-            compassEnabled: false,
-            mapToolbarEnabled: false,
-            mapType: MapType.normal,
-            zoomControlsEnabled: false,
-            // polylines: {
-            //   Polyline(
-            //       polylineId: const PolylineId("route"),
-            //       color: Colors.blue,
-            //       width: 5,
-            //       points: [
-            //         const LatLng(3.8480, 11.5021),
-            //         ...generatePointsAround(
-            //             const LatLng(3.8480, 11.5021), 500, 8)
-            //       ])
-            // },
-            circles: {
-              Circle(
-                circleId: const CircleId("source"),
-                center: const LatLng(3.8480, 11.5021),
-                radius: 1000,
-                fillColor: Colors.blue.withOpacity(0.3),
-                strokeColor: Colors.blue,
-                strokeWidth: 1,
+    return GestureDetector(
+      // onTap: () => context.read<GetUserBloc>().add(const GetUser()),
+      onTap: () =>
+          print(context.read<ConnexionBloc>().state.user?.subscriptionIsActive),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: buildAppBar(),
+        //bottomNavigationBar: buildBottomNavigationBar(),
+        body: (context
+                    .watch<ConnexionBloc>()
+                    .state
+                    .user
+                    ?.subscriptionIsActive !=
+                SubscriptionStatus.active)
+            ? SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                child: PaymentView(),
               )
-            },
-            initialCameraPosition: const CameraPosition(
-                target: LatLng(3.8480, 11.5021), zoom: 14.5),
-            markers: {
-              const Marker(
-                markerId: MarkerId("source"),
-                position: LatLng(3.8480, 11.5021),
-              ),
-              const Marker(
-                // icon:
-                markerId: MarkerId("destination"),
-                position: LatLng(3.7480, 11.5021),
-              ),
-            },
-          ),
-          /* Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: buildTopBar()
-          ), */
-
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              //margin: EdgeInsets.all(20),
-              //height: 150,
-              width: MediaQuery.of(context).size.width,
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30))),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            : Stack(
                 children: [
-                  Text(
-                    "RGP7+F5Q, Yaoundé",
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Text(
-                    "Mis à jour il y'a 1 minute",
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium!
-                        .copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Row(
-                    children: [
-                      FilledButton(
-                        onPressed: () {},
-                        child: const Text("Live"),
+                  GoogleMap(
+                    compassEnabled: false,
+                    mapToolbarEnabled: false,
+                    mapType: MapType.normal,
+                    zoomControlsEnabled: false,
+                    // polylines: {
+                    //   Polyline(
+                    //       polylineId: const PolylineId("route"),
+                    //       color: Colors.blue,
+                    //       width: 5,
+                    //       points: [
+                    //         const LatLng(3.8480, 11.5021),
+                    //         ...generatePointsAround(
+                    //             const LatLng(3.8480, 11.5021), 500, 8)
+                    //       ])
+                    // },
+                    circles: {
+                      Circle(
+                        circleId: const CircleId("source"),
+                        center: const LatLng(3.8480, 11.5021),
+                        radius: 1000,
+                        fillColor: Colors.blue.withOpacity(0.3),
+                        strokeColor: Colors.blue,
+                        strokeWidth: 1,
+                      )
+                    },
+                    initialCameraPosition: const CameraPosition(
+                        target: LatLng(3.8480, 11.5021), zoom: 14.5),
+                    markers: {
+                      const Marker(
+                        markerId: MarkerId("source"),
+                        position: LatLng(3.8480, 11.5021),
                       ),
-                      const SizedBox(
-                        width: 5,
+                      const Marker(
+                        // icon:
+                        markerId: MarkerId("destination"),
+                        position: LatLng(3.7480, 11.5021),
                       ),
-                      const Expanded(
-                        child: FilledButton(
-                          onPressed: null,
-                          // (){
-                          /*  Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => OTPVerificationView(),
-                          ),); */
-                          // },
-                          child: Text("Safe Area (1000m)"),
-                        ),
+                    },
+                  ),
+                  /* Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: buildTopBar()
+            ), */
+
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      //margin: EdgeInsets.all(20),
+                      //height: 150,
+                      width: MediaQuery.of(context).size.width,
+                      decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(30),
+                              topRight: Radius.circular(30))),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "RGP7+F5Q, Yaoundé",
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            "Mis à jour il y'a 1 minute",
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Row(
+                            children: [
+                              FilledButton(
+                                onPressed: () {},
+                                child: const Text("Live"),
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              const Expanded(
+                                child: FilledButton(
+                                  onPressed: null,
+                                  // (){
+                                  /*  Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => OTPVerificationView(),
+                            ),); */
+                                  // },
+                                  child: Text("Safe Area (1000m)"),
+                                ),
+                              ),
+                            ],
+                          )
+                        ],
                       ),
-                    ],
+                    ),
                   )
                 ],
               ),
-            ),
-          )
-        ],
       ),
     );
   }
@@ -178,6 +200,8 @@ class _HomePageState extends State<HomePage> {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
+      title: Text("Welcome ${context.watch<ConnexionBloc>().state.user?.name}",
+          style: Theme.of(context).textTheme.titleMedium),
       leading: Builder(
         builder: (BuildContext context) {
           return IconButton(

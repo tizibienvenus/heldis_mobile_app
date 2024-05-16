@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -19,11 +20,13 @@ showSnackBar(
             color: color,
           ),
           const SizedBox(width: 10),
-          Text(
-            message,
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.bold,
+          Expanded(
+            child: Text(
+              message,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
@@ -39,4 +42,23 @@ showWarningSnackBar({required BuildContext context, required String message}) {
       color: Colors.white,
       icon: Icons.warning_amber_rounded,
       bgColor: Colors.orange);
+}
+
+showSuccessSnackBar({required BuildContext context, required String message}) {
+  showSnackBar(
+    context: context,
+    message: message,
+    color: Colors.white,
+    icon: Icons.warning_amber_rounded,
+    bgColor: Color.fromARGB(255, 56, 146, 93),
+  );
+}
+
+showErrorSnackBar({required BuildContext context, required String message}) {
+  showSnackBar(
+      context: context,
+      message: message,
+      color: Colors.white,
+      icon: Icons.warning_amber_rounded,
+      bgColor: Colors.red);
 }

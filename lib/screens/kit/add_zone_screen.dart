@@ -5,18 +5,26 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:heldis/common/FieldInput.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:heldis/common/tools.dart';
+import 'package:heldis/screens/kit/blocs/get_children/get_children_bloc.dart';
+import 'package:heldis/screens/kit/blocs/zone_handle/zone_handle_bloc.dart';
 
 class AddZoneScreen extends StatefulWidget {
-  const AddZoneScreen({super.key});
-
+  const AddZoneScreen({
+    super.key,
+    required this.childId,
+  });
+  final int childId;
   @override
   State<AddZoneScreen> createState() => _AddZoneScreenState();
 }
 
 class _AddZoneScreenState extends State<AddZoneScreen> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   List<LatLng> generatedPoints = [];
   TextEditingController zoneNameController = TextEditingController();
   TextEditingController radiusController = TextEditingController();
@@ -184,110 +192,119 @@ class _AddZoneScreenState extends State<AddZoneScreen> {
       backgroundColor: const Color.fromARGB(255, 240, 249, 255),
       appBar: buildAppBar(),
       //bottomNavigationBar: buildBottomNavigationBar(),
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-            width: double.infinity,
-            color: Colors.white,
-            child: FieldInput(
-              title: "Zone Name",
-              controller: zoneNameController,
-              validator: (value) {
-                return null;
-              },
+      body: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              width: double.infinity,
+              color: Colors.white,
+              child: FieldInput(
+                title: "Zone Name",
+                controller: zoneNameController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Enter zone name';
+                  }
+                  return null;
+                },
+              ),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-            width: double.infinity,
-            color: Colors.white,
-            child: Text("Tap on the map to add reference point to your zone",
-                style: Theme.of(context).textTheme.titleSmall),
-          ),
-          Expanded(
-            child: Stack(
-              children: [
-                GoogleMap(
-                  // compassEnabled: false,
-                  mapType: MapType.normal,
-                  // style: mapStyle,
-                  zoomControlsEnabled: false,
-                  onMapCreated: (controller) {
-                    _mapsController.complete(controller);
-                  },
-                  onTap: (position) {
-                    setState(() {
-                      marker = Marker(
-                        markerId: const MarkerId("destination"),
-                        position: position,
-                        flat: true,
-                        icon: BitmapDescriptor.defaultMarkerWithHue(
-                          BitmapDescriptor.hueBlue,
-                        ),
-                      );
-                    });
-                    print(position);
-                  },
-                  circles: {
-                    if (marker != null && radiusController.text.isNotEmpty)
-                      Circle(
-                        circleId: const CircleId("source"),
-                        center: marker!.position,
-                        radius: double.parse(radiusController.text),
-                        fillColor: Colors.blue.withOpacity(0.3),
-                        strokeColor: Colors.blue,
-                        strokeWidth: 1,
-                      )
-                  },
-                  initialCameraPosition: const CameraPosition(
-                      target: LatLng(3.8480, 11.5021), zoom: 14.5),
-                  markers: {
-                    if (marker != null) marker!,
-                  },
-                  myLocationButtonEnabled: false,
-                  myLocationEnabled: true,
-                ),
-                Positioned(
-                  bottom: 10,
-                  right: 10,
-                  child: IconButton(
-                    onPressed: () {
-                      _getCurrentLocation();
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              width: double.infinity,
+              color: Colors.white,
+              child: Text("Tap on the map to add reference point to your zone",
+                  style: Theme.of(context).textTheme.titleSmall),
+            ),
+            Expanded(
+              child: Stack(
+                children: [
+                  GoogleMap(
+                    // compassEnabled: false,
+                    mapType: MapType.normal,
+                    // style: mapStyle,
+                    zoomControlsEnabled: false,
+                    onMapCreated: (controller) {
+                      _mapsController.complete(controller);
                     },
-                    icon: Icon(
-                      Icons.my_location_outlined,
-                    ),
-                    style: ButtonStyle(
-                        backgroundColor: MaterialStatePropertyAll(
-                      Colors.white,
-                    )),
+                    onTap: (position) {
+                      setState(() {
+                        marker = Marker(
+                          markerId: const MarkerId("destination"),
+                          position: position,
+                          flat: true,
+                          icon: BitmapDescriptor.defaultMarkerWithHue(
+                            BitmapDescriptor.hueBlue,
+                          ),
+                        );
+                      });
+                      print(position);
+                    },
+                    circles: {
+                      if (marker != null && radiusController.text.isNotEmpty)
+                        Circle(
+                          circleId: const CircleId("source"),
+                          center: marker!.position,
+                          radius: double.parse(radiusController.text),
+                          fillColor: Colors.blue.withOpacity(0.3),
+                          strokeColor: Colors.blue,
+                          strokeWidth: 1,
+                        )
+                    },
+                    initialCameraPosition: const CameraPosition(
+                        target: LatLng(3.8480, 11.5021), zoom: 14.5),
+                    markers: {
+                      if (marker != null) marker!,
+                    },
+                    myLocationButtonEnabled: false,
+                    myLocationEnabled: true,
                   ),
-                )
-              ],
+                  Positioned(
+                    bottom: 10,
+                    right: 10,
+                    child: IconButton(
+                      onPressed: () {
+                        _getCurrentLocation();
+                      },
+                      icon: const Icon(
+                        Icons.my_location_outlined,
+                      ),
+                      style: const ButtonStyle(
+                          backgroundColor: MaterialStatePropertyAll(
+                        Colors.white,
+                      )),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-          Container(
-            padding:
-                const EdgeInsets.only(bottom: 80, top: 20, left: 30, right: 30),
-            width: double.infinity,
-            color: Colors.white,
-            child: FieldInput(
-              title: "Radius (m)",
-              controller: radiusController,
-              onChanged: (p0) {
-                setState(() {});
-              },
-              formatter: <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(RegExp('[0-9]')),
-              ],
-              inputType: TextInputType.number,
-              validator: (value) {
-                return null;
-              },
+            Container(
+              padding: const EdgeInsets.only(
+                  bottom: 80, top: 20, left: 30, right: 30),
+              width: double.infinity,
+              color: Colors.white,
+              child: FieldInput(
+                title: "Radius (m)",
+                controller: radiusController,
+                onChanged: (p0) {
+                  setState(() {});
+                },
+                formatter: <TextInputFormatter>[
+                  FilteringTextInputFormatter.allow(RegExp('[0-9]')),
+                ],
+                inputType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Enter radius';
+                  }
+                  return null;
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -295,14 +312,53 @@ class _AddZoneScreenState extends State<AddZoneScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(
-              child: FilledButton(
-                style: ButtonStyle(
-                    padding: const MaterialStatePropertyAll(EdgeInsets.all(13)),
-                    shape: MaterialStatePropertyAll(RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ))),
-                onPressed: () {},
-                child: const Text("Add"),
+              child: BlocListener<ZoneHandleBloc, ZoneHandleState>(
+                listener: (context, state) {
+                  if (state is AddZoneSuccess) {
+                    showSuccessSnackBar(
+                        context: context, message: "Zone added successfully");
+                    context.read<GetChildrenBloc>().add(const GetChildren());
+                  }
+                  if (state is AddZoneError) {
+                    showErrorSnackBar(context: context, message: state.message);
+                  }
+                },
+                child: FilledButton(
+                  style: ButtonStyle(
+                      padding:
+                          const MaterialStatePropertyAll(EdgeInsets.all(13)),
+                      shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ))),
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      // if (marker == null) {
+                      //   showErrorSnackBar(
+                      //       context: context,
+                      //       message: "Pick a point on the map");
+                      //   return;
+                      // }
+
+                      context.read<ZoneHandleBloc>().add(
+                            AddZoneEvent(
+                              zoneName: zoneNameController.text,
+                              radius: int.parse(radiusController.text),
+                              lat: marker?.position.latitude ?? 8.1,
+                              lng: marker?.position.longitude ?? 11.71,
+                              childId: widget.childId,
+                            ),
+                          );
+                    }
+                  },
+                  child: context.watch<ZoneHandleBloc>().state is AddZoneLoading
+                      ? const SizedBox(
+                          height: 22,
+                          width: 22,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                          ))
+                      : const Text("Add"),
+                ),
               ),
             ),
           ],
