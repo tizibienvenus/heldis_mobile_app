@@ -215,7 +215,10 @@ class _PlanCardState extends State<PlanCard> {
                   filled: true,
                   fillColor: Colors.blue[50],
                   border: const OutlineInputBorder(
-                    borderSide: BorderSide.none,
+                    borderSide: BorderSide(
+                      color: Color.fromARGB(255, 194, 194, 194),
+                      width: 1.0,
+                    ),
                     borderRadius: BorderRadius.all(Radius.circular(10.0)),
                   ),
                 ),

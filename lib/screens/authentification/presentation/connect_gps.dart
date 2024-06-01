@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heldis/common/FieldInput.dart';
@@ -9,6 +12,7 @@ import 'package:heldis/screens/home.dart';
 import 'package:heldis/screens/home/home_page.dart';
 import 'package:heldis/screens/kit/blocs/get_children/get_children_bloc.dart';
 import 'package:heldis/screens/layout/check_connection_screen.dart';
+import 'package:image_picker/image_picker.dart';
 
 class GPSConnectView extends StatefulWidget {
   GPSConnectView({Key? key, this.canPop = false}) : super(key: key);
@@ -27,11 +31,13 @@ class _GPSConnectViewState extends State<GPSConnectView> {
   late TextEditingController additionalInfoController = TextEditingController();
   late TextEditingController pictureController = TextEditingController();
   late GpsUserState userState = GpsUserState.child;
+  String image = '';
   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     //final state = context.watch<AuthenticationState>();
+
     return Scaffold(
       appBar: AppBar(),
       body: SafeArea(
@@ -277,34 +283,28 @@ class _GPSConnectViewState extends State<GPSConnectView> {
                             },
                           ),
                           const SizedBox(height: 20),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: FilledButton(
-                                  style: ButtonStyle(
-                                      backgroundColor:
-                                          const MaterialStatePropertyAll(
-                                              Colors.black54),
-                                      padding: const MaterialStatePropertyAll(
-                                          EdgeInsets.all(13)),
-                                      shape: MaterialStatePropertyAll(
-                                          RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ))),
-                                  onPressed: () {},
-                                  child: const Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "Add a Picture",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                          if (image.isEmpty)
+                            FieldInput(
+                              title: "Pick image",
+                              controller: null,
+                              readOnly: true,
+                              onTap: () {
+                                pickImage(context);
+                              },
+                              validator: (value) {
+                                return null;
+                              },
+                            ),
+                          if (image != "")
+                            Center(
+                              child: GestureDetector(
+                                onTap: () {
+                                  pickImage(context);
+                                },
+                                child: Image.memory(base64Decode(image),
+                                    width: 200, height: 200, fit: BoxFit.cover),
                               ),
-                            ],
-                          ),
+                            ),
                           const SizedBox(height: 20),
                           Row(
                             children: [
@@ -325,7 +325,7 @@ class _GPSConnectViewState extends State<GPSConnectView> {
                                       context.read<RegisterKitBloc>().add(
                                             RegisterKitSubmitEvent(
                                               name: nameController.text,
-                                              avatar: pictureController.text,
+                                              avatar: image,
                                               birthDate:
                                                   birthDateController.text,
                                               gpsSimNumber:
@@ -372,6 +372,55 @@ class _GPSConnectViewState extends State<GPSConnectView> {
           ),
         ),
       ),
+    );
+  }
+
+  Future<dynamic> pickImage(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          title: const Text('Pick an image'),
+          children: <Widget>[
+            SimpleDialogOption(
+              onPressed: () async {
+                final ImagePicker picker = ImagePicker();
+                final XFile? _image = await picker.pickImage(
+                  source: ImageSource.camera,
+                );
+                if (_image == null) {
+                  return;
+                }
+                List<int> imageBytes = File(_image.path).readAsBytesSync();
+                final imageBase64 = base64Encode(imageBytes);
+                setState(() {
+                  image = imageBase64;
+                });
+                Navigator.pop(context);
+              },
+              child: const Text('Camera'),
+            ),
+            SimpleDialogOption(
+              onPressed: () async {
+                final ImagePicker picker = ImagePicker();
+                final XFile? _image = await picker.pickImage(
+                  source: ImageSource.gallery,
+                );
+                if (_image == null) {
+                  return;
+                }
+                List<int> imageBytes = File(_image.path).readAsBytesSync();
+                final imageBase64 = base64Encode(imageBytes);
+                setState(() {
+                  image = imageBase64;
+                });
+                Navigator.pop(context);
+              },
+              child: const Text('Gallery'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

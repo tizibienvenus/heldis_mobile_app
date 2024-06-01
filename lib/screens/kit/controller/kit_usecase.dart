@@ -47,6 +47,31 @@ class KitUseCase {
     }
   }
 
+  ResultFuture<String> updateChild(
+      {required int childId,
+      required String name,
+      required String avatar,
+      required String birthDate,
+      required String gpsSimNumber,
+      required String description}) async {
+    try {
+      var response = await kitRemoteDataSource.updateChild(
+        childId: childId,
+        name: name,
+        avatar: avatar,
+        birthDate: birthDate,
+        gpsSimNumber: gpsSimNumber,
+        description: description,
+      );
+      return Right(response);
+    } on APIException catch (e) {
+      return Left(APIFailure.fromException(e));
+    } catch (e) {
+      return Left(APIFailure.fromException(
+          APIException(message: e.toString(), statusCode: "503")));
+    }
+  }
+
   ResultFuture<String> deleteZone(
       {required int zoneId, required int childId}) async {
     try {

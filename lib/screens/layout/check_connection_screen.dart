@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:heldis/constants/general.dart';
-import 'package:heldis/screens/authentification/domain/entities/user_entity.dart';
+import 'package:heldis/screens/authentification/presentation/blocs/get_user/get_user_bloc.dart';
 import 'package:heldis/screens/authentification/presentation/kit_screen.dart';
 import 'package:heldis/screens/authentification/presentation/login.dart';
 import 'package:heldis/screens/home.dart';
+import 'package:heldis/screens/kit/blocs/get_children/get_children_bloc.dart';
 import 'package:heldis/services/session/connexion/connexion_bloc.dart';
+import 'package:heldis/services/session/selected_kit/selected_kit_bloc.dart';
 
 class CheckConnectionScreen extends StatefulWidget {
   const CheckConnectionScreen({super.key});
@@ -17,27 +19,50 @@ class CheckConnectionScreen extends StatefulWidget {
 class _CheckConnectionScreenState extends State<CheckConnectionScreen> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     initConnexionState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return context.watch<ConnexionBloc>().state.token != null
-        ? ((context.watch<ConnexionBloc>().state.user?.children?.isEmpty ??
-                true)
-            ? const KitScreen()
-            : const HomeScreen())
-        : const LoginScreen();
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<GetUserBloc, GetUserState>(
+          listener: (context, state) {
+            if (state is GetUserSuccess) {
+              context.read<ConnexionBloc>().add(ConnexionLoadEvent(
+                  user: state.user, token: box.read("token")));
+            }
+          },
+        ),
+        BlocListener<GetChildrenBloc, GetChildrenState>(
+          listener: (context, state) {
+            if (state is GetChildrenSuccess) {
+              context.read<SelectedKitBloc>().add(ChangeSelectedKitEvent(
+                  kit: state.children.firstOrNull?.id ?? 0));
+            }
+          },
+        ),
+      ],
+      child: BlocBuilder<GetUserBloc, GetUserState>(builder: (context, state) {
+        if (state is GetUserLoading) {
+          return const Scaffold(
+              body: Center(child: CircularProgressIndicator()));
+        }
+        return context.watch<ConnexionBloc>().state.token != null
+            ? ((context.watch<ConnexionBloc>().state.user?.children?.isEmpty ??
+                    true)
+                ? const KitScreen()
+                : const HomeScreen())
+            : const LoginScreen();
+      }),
+    );
   }
 
   initConnexionState() {
-    context.read<ConnexionBloc>().add(ConnexionLoadEvent(
-          user: box.read('user') != null
-              ? UserEntity.fromJson(box.read('user'))
-              : null,
-          token: box.read('token'),
-        ));
+    if (box.read("token") != null) {
+      context.read<GetUserBloc>().add(const GetUser());
+      context.read<GetChildrenBloc>().add(const GetChildren());
+    }
   }
 }

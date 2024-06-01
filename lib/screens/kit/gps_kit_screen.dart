@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -158,13 +159,25 @@ class SelectedGPSKitItem extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.all(Radius.circular(15)),
             ),
+            padding: const EdgeInsets.all(15),
             child: Row(children: [
-              Image.asset(
-                "assets/heldis.png",
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
-              ),
+              if (child.avatar != null && child.avatar!.isNotEmpty)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: Image.memory(
+                    base64Decode(child.avatar!),
+                    width: 70,
+                    height: 70,
+                    fit: BoxFit.cover,
+                  ),
+                )
+              else
+                Image.asset(
+                  "assets/heldis.png",
+                  width: 70,
+                  height: 70,
+                  fit: BoxFit.cover,
+                ),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),

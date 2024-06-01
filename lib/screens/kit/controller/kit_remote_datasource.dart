@@ -12,6 +12,14 @@ import 'package:http/http.dart' as http;
 abstract class KitRemoteDataSource {
   Future<GetAllChildResponseModel> getChildren();
 
+  Future<String> updateChild(
+      {required int childId,
+      required String name,
+      required String avatar,
+      required String birthDate,
+      required String gpsSimNumber,
+      required String description});
+
   Future<AddZoneResponseModel> addZone({
     required String zoneName,
     required int radius,
@@ -42,6 +50,39 @@ class KitRemoteDataSourceImpl implements KitRemoteDataSource {
       var responseModel =
           GetAllChildResponseModel.fromJson(responseJson as DataMap);
       return responseModel;
+    } on APIException {
+      rethrow;
+    } catch (e) {
+      throw APIException(message: e.toString(), statusCode: '505');
+    }
+  }
+
+  @override
+  Future<String> updateChild({
+    required int childId,
+    required String name,
+    required String avatar,
+    required String birthDate,
+    required String gpsSimNumber,
+    required String description,
+  }) async {
+    Map<String, dynamic> body = {
+      'name': name,
+      'avatar': avatar,
+      'birth_date': birthDate,
+      'gps_sim_number': gpsSimNumber,
+      'description': description
+    };
+    try {
+      // start the request
+      var response = await client.put(
+        Uri.https(kBaseUrl, '$kPrefix/child/$childId'),
+        body: jsonEncode(body),
+        headers: headersWithToken(),
+      );
+      // test the result
+      checkResponse(response);
+      return "success";
     } on APIException {
       rethrow;
     } catch (e) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class FieldInput extends StatelessWidget {
+class FieldInput extends StatefulWidget {
   const FieldInput({
     Key? key,
     required this.title,
@@ -18,7 +18,7 @@ class FieldInput extends StatelessWidget {
   }) : super(key: key);
 
   final String title;
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final TextInputType? inputType;
   final FormFieldValidator<String>? validator;
   final int? maxLines;
@@ -30,20 +30,27 @@ class FieldInput extends StatelessWidget {
   final bool obscureText;
 
   @override
+  State<FieldInput> createState() => _FieldInputState();
+}
+
+class _FieldInputState extends State<FieldInput> {
+  bool isObscure = true;
+
+  @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: controller,
-      keyboardType: inputType,
-      minLines: minLines,
-      maxLines: maxLines,
-      inputFormatters: formatter,
-      obscureText: obscureText,
-      onTap: onTap,
-      onChanged: onChanged,
-      readOnly: readOnly,
+      controller: widget.controller,
+      keyboardType: widget.inputType,
+      minLines: widget.minLines,
+      maxLines: widget.maxLines,
+      inputFormatters: widget.formatter,
+      obscureText: widget.obscureText ? isObscure : false,
+      onTap: widget.onTap,
+      onChanged: widget.onChanged,
+      readOnly: widget.readOnly,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       decoration: InputDecoration(
-        hintText: title,
+        hintText: widget.title,
         contentPadding:
             const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
         labelStyle: const TextStyle(color: Colors.grey),
@@ -53,8 +60,20 @@ class FieldInput extends StatelessWidget {
           borderSide: BorderSide.none,
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
         ),
+        suffixIcon: widget.obscureText
+            ? GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isObscure = !isObscure;
+                  });
+                },
+                child: Icon(
+                  isObscure ? Icons.visibility : Icons.visibility_off,
+                ),
+              )
+            : null,
       ),
-      validator: validator,
+      validator: widget.validator,
     );
   }
 }

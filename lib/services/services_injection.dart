@@ -1,9 +1,17 @@
 import 'package:heldis/screens/authentification/presentation/blocs/get_user/get_user_bloc.dart';
 import 'package:heldis/screens/authentification/presentation/blocs/register_kit/register_kit_bloc.dart';
+import 'package:heldis/screens/history/blocs/get_coordinate_history/get_coordinate_history_bloc.dart';
+import 'package:heldis/screens/history/controller/history_remote_datasource.dart';
+import 'package:heldis/screens/history/controller/history_usecase.dart';
+import 'package:heldis/screens/home/blocs/bloc/get_last_position_bloc.dart';
 import 'package:heldis/screens/kit/blocs/get_children/get_children_bloc.dart';
+import 'package:heldis/screens/kit/blocs/handle_child/handle_child_bloc.dart';
 import 'package:heldis/screens/kit/blocs/zone_handle/zone_handle_bloc.dart';
 import 'package:heldis/screens/kit/controller/kit_remote_datasource.dart';
 import 'package:heldis/screens/kit/controller/kit_usecase.dart';
+import 'package:heldis/screens/profile/blocs/handle_profile/handle_profile_bloc.dart';
+import 'package:heldis/screens/profile/controller/profile_remote_datasource.dart';
+import 'package:heldis/screens/profile/controller/profile_usecase.dart';
 import 'package:heldis/services/session/connexion/connexion_bloc.dart';
 import 'package:heldis/services/payment/blocs/get_plans/get_plans_bloc.dart';
 import 'package:heldis/services/payment/blocs/payment/payment_bloc.dart';
@@ -49,6 +57,23 @@ Future<void> initServices() async {
         () => KitUseCase(kitRemoteDataSource: sl()))
     ..registerLazySingleton<KitRemoteDataSource>(
         () => KitRemoteDataSourceImpl(client: sl()));
+  sl.registerFactory<HandleChildBloc>(() => HandleChildBloc(kitUsecase: sl()));
+  sl
+    ..registerFactory<GetCoordinateHistoryBloc>(
+        () => GetCoordinateHistoryBloc(historyUseCase: sl()))
+    ..registerLazySingleton<HistoryUseCase>(
+        () => HistoryUseCase(historyRemoteDataSource: sl()))
+    ..registerLazySingleton<HistoryRemoteDataSource>(
+        () => HistoryRemoteDataSourceImpl(client: sl()));
+  sl
+    ..registerFactory<HandleProfileBloc>(
+        () => HandleProfileBloc(profileUseCase: sl()))
+    ..registerLazySingleton<ProfileUseCase>(
+        () => ProfileUseCase(profileRemoteDataSource: sl()))
+    ..registerLazySingleton<ProfileRemoteDataSource>(
+        () => ProfileRemoteDataSourceImpl(client: sl()));
+  sl.registerFactory<GetLastPositionBloc>(
+      () => GetLastPositionBloc(historyUseCase: sl()));
   sl.registerFactory<ZoneHandleBloc>(() => ZoneHandleBloc(kitUseCase: sl()));
   sl.registerFactory<SelectedKitBloc>(() => SelectedKitBloc());
 }
